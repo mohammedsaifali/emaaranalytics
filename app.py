@@ -28,7 +28,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df = df.groupby(['month','Item'], as_index=False)['Qty'].sum()
     df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    #df.sort_values(by='month', inplace = True) 
+    #df.sort_values(by='month', inplace = True)
+    return df
 
 
 @st.experimental_memo
