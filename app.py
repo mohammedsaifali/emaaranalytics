@@ -11,7 +11,7 @@ import plotly.express as px
 import seaborn as sns
 import matplotlib.pyplot as plt
 import altair as alt
-from pandas.api.types import CategoricalDtype
+
 
 
 
@@ -29,9 +29,6 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['Qty'] = df['Qty'].astype('float')
     df = df.groupby(['month','Item'], as_index=False)['Qty'].sum()
     df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
-    month_order = CategoricalDtype(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], ordered=True)
-    df['month'] = df['month'].astype(month_order)
-    df.sort_values('month')
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     #df.Tm = f.Tm.cat.set_categories(new_order)
     #df.sort_values(by='month', inplace = True)
