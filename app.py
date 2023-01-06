@@ -11,6 +11,7 @@ import plotly.express as px
 import seaborn as sns
 import matplotlib.pyplot as plt
 import altair as alt
+from pandas.api.types import CategoricalDtype
 
 
 
@@ -32,6 +33,10 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     #df.Tm = f.Tm.cat.set_categories(new_order)
     #df.sort_values(by='month', inplace = True)
+    month_order = CategoricalDtype(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], ordered=True)
+    df['month'] = df['month'].astype(month_order)
+    df.sort_values('month')
+
     return df
 
 
@@ -41,7 +46,7 @@ def filter_data(
 ) -> pd.DataFrame:
     df1 = df[df.Item.isin(account_selections)]
     df1 = df1.groupby(['month','Item'], as_index=False)['Qty'].sum()
-    df1 = df1.sort_values(by = 'month')
+    #df1 = df1.sort_values(by = 'month')
     #df1.round(2)
     #df1['month'] = df1['month'].apply(lambda x: calendar.month_abbr[x])
     #fig = sns.barplot(x="month", y="Qty", hue="Item", data=df1)
