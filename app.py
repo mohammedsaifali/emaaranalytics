@@ -33,9 +33,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     #df.Tm = f.Tm.cat.set_categories(new_order)
     #df.sort_values(by='month', inplace = True)
-    month_order = CategoricalDtype(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], ordered=True)
-    df['month'] = df['month'].astype(month_order)
-    df.sort_values('month')
+    months_categories = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    df["month"] = pd.Categorical(df["month"], categories = months_categories)
+    df.sort_values(by = "month")
 
     return df
 
