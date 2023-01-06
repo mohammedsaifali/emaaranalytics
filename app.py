@@ -11,6 +11,8 @@ import plotly.express as px
 import seaborn as sns
 import matplotlib.pyplot as plt
 import altair as alt
+from pandas.api.types import CategoricalDtype
+
 
 
 
