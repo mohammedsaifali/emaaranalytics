@@ -27,11 +27,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['Qty'] = df['Qty'].astype('float')
     df = df.groupby(['month','Item'], as_index=False)['Qty'].sum()
     df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
-    df_mapping = pd.DataFrame({
-    'month': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],})
-    sort_mapping = df_mapping.reset_index().set_index('month')
-    df['month_num'] = df['month'].map(sort_mapping['index'])
-    df.sort_values('month_num')
+    month_order = CategoricalDtype(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], ordered=True)
+    df['month'] = df['month'].astype(month_order)
+    df.sort_values('month')
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     #df.Tm = f.Tm.cat.set_categories(new_order)
     #df.sort_values(by='month', inplace = True)
