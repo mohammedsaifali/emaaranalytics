@@ -47,7 +47,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 def filter_data(
     df: pd.DataFrame, account_selections: list[str]
 ) -> pd.DataFrame:
-    df1 = df[df.Item.isin(account_selections)]
+    df1 = df[df1.Item.isin(account_selections)]
     df1 = df1.groupby(['month','Item'], as_index=False)['Qty'].sum()
     #df1 = df1.sort_values(by = 'month')
     #df1.round(2)
