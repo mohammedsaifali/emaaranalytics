@@ -13,7 +13,9 @@ import matplotlib.pyplot as plt
 import altair as alt
 from pandas.api.types import CategoricalDtype
 
-
+@st.experimental_memo
+def convert_df(df):
+   return df.to_csv(index=False).encode('utf-8')
 
 
 
@@ -85,7 +87,16 @@ def main() -> None:
 
     df = clean_data(df)
     with st.expander("Cleaned Data"):
-        st.write(df)
+        res = df.pivot(index='Item', columns='month', values='Qty')
+        st.write(res)
+        csv = convert_df(res)
+        st.download_button(
+           "Press to Download",
+           csv,
+           "file.csv",
+           "text/csv",
+           key='download-csv'
+        )
 
     st.sidebar.subheader("Filter By Item")
 
