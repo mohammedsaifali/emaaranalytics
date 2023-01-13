@@ -106,7 +106,7 @@ def main() -> None:
         "Select Items to View", options=accounts, default=accounts
     )
     account_selections = list(account_selections)
-    filter_data(df1, account_selections)
+    filter_data(df, account_selections)
 if __name__ == "__main__":
     st.set_page_config(
         "Emaar Analytics",
