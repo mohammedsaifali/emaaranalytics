@@ -101,7 +101,7 @@ def main() -> None:
 
     st.sidebar.subheader("Filter By Item")
 
-    accounts = list(df1.Item.unique())
+    accounts = list(df.Item.unique())
     account_selections = st.sidebar.multiselect(
         "Select Items to View", options=accounts, default=accounts
     )
