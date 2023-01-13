@@ -31,7 +31,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
     df['Qty'] = df['Qty'].astype('float')
     df = df.groupby(['month','Item'], as_index=False)['Qty'].sum()
-    df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
+    #df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     #df.Tm = f.Tm.cat.set_categories(new_order)
     #df.sort_values(by='month', inplace = True)
