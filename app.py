@@ -15,7 +15,7 @@ from pandas.api.types import CategoricalDtype
 
 @st.experimental_memo
 def convert_df(df):
-   return df.to_csv(index=False).encode('utf-8')
+   return df.to_csv().encode('utf-8')
 
 
 
