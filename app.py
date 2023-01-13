@@ -30,8 +30,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['Qty'] = df['Qty'].str.replace(",", "")
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
     df['Qty'] = df['Qty'].astype('float')
-    df['Amount'] = df['Amount'].astype('float')
-    dfi = df.groupby(['month','Item','Amount'], as_index=False)['Qty'].sum()
+    #df['Amount'] = df['Amount'].astype('float')
+    dfi = df.groupby(['month','Item'], as_index=False)['Qty'].sum()
     #df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     #df.Tm = f.Tm.cat.set_categories(new_order)
