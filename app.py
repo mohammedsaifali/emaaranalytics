@@ -30,7 +30,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['Qty'] = df['Qty'].str.replace(",", "")
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
     df['Qty'] = df['Qty'].astype('float')
-    #df['Amount'] = df['Amount'].astype('float')
+    df['Amount'] = df['Amount'].astype('float')
     df = df.groupby(['month','Item'], as_index=False)['Qty','Amount'].sum()
     #df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
@@ -82,11 +82,11 @@ def main() -> None:
     #else:
     #st.success("Uploaded your file!")
 
-    df = pd.read_excel(uploaded_data,header=None)
+    df1 = pd.read_excel(uploaded_data,header=None)
     with st.expander("Raw Dataframe"):
-        st.write(df)
+        st.write(df1)
 
-    df = clean_data(df)
+    df = clean_data(df1)
     with st.expander("Cleaned Data"):
         res = df.pivot(index='Item', columns='month', values=['Qty','Amount'])
         st.write(res)
@@ -101,12 +101,12 @@ def main() -> None:
 
     st.sidebar.subheader("Filter By Item")
 
-    accounts = list(df.Item.unique())
+    accounts = list(df1.Item.unique())
     account_selections = st.sidebar.multiselect(
         "Select Items to View", options=accounts, default=accounts
     )
     account_selections = list(account_selections)
-    filter_data(df, account_selections)
+    filter_data(df1, account_selections)
 if __name__ == "__main__":
     st.set_page_config(
         "Emaar Analytics",
