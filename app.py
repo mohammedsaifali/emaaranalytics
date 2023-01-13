@@ -31,7 +31,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
     df['Qty'] = df['Qty'].astype('float')
     #df['Amount'] = df['Amount'].astype('float')
-    dfi = df.groupby(['month','Item'], as_index=False)['Qty'].sum()
+    dfi = df.groupby(['month','Item'], as_index=False)['Qty','Amount'].sum()
     #df['month'] = df['month'].apply(lambda x: calendar.month_abbr[x])
     #new_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     #df.Tm = f.Tm.cat.set_categories(new_order)
@@ -88,7 +88,7 @@ def main() -> None:
 
     df = clean_data(df)
     with st.expander("Cleaned Data"):
-        res = df.pivot(index='Item', columns='month', values='Qty')
+        res = dfi.pivot(index='Item', columns='month', values=['Qty','Amount'])
         st.write(res)
         csv = convert_df(res)
         st.download_button(
