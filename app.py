@@ -53,6 +53,7 @@ def filter_data(
     #df1.round(2)
     #df1['month'] = df1['month'].apply(lambda x: calendar.month_abbr[x])
     #fig = sns.barplot(x="month", y="Qty", hue="Item", data=df1)
+    st.bar_chart(data=df1, *, x=month, y=Qty, width=0, height=0, use_container_width=True)
     fig = alt.Chart(df1).mark_bar().encode(
     x='month',
     y='Qty',
