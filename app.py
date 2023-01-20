@@ -88,14 +88,14 @@ def main() -> None:
         st.write(df1)
 
     df = clean_data(df1)
-    with st.expander("Cleaned Data"):
+    with st.expander("View Report"):
         res = df.pivot(index='Item', columns='month', values=['Qty','Amount'])
         res['QtyTotal']=res.iloc[:,0:12].sum(axis=1)
         res['AmountTotal'] = res.iloc[:,12:24].sum(axis=1)
         st.write(res)
         csv = convert_df(res)
         st.download_button(
-           "Press to Download",
+           "Download Report",
            csv,
            "file.csv",
            "text/csv",
