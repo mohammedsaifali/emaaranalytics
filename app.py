@@ -89,6 +89,8 @@ def main() -> None:
     df = clean_data(df1)
     with st.expander("Cleaned Data"):
         res = df.pivot(index='Item', columns='month', values=['Qty','Amount'])
+        res['QtyTotal']=res.iloc[:,1:12].sum(axis=1)
+        res['AmountTotal'] = res.iloc[:,13:24].sum(axis=1)
         st.write(res)
         csv = convert_df(res)
         st.download_button(
