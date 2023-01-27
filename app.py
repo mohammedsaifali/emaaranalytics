@@ -21,13 +21,13 @@ def convert_df(df):
 def clean_quote(df: pd.DataFrame) -> pd.DataFrame:
    #df = pd.read_excel('quotex.xls',header=None) 
    df = df.iloc[4:]
-   df.columns =['Date','DocNo','DocType','Currency','CustomerCode','Customer','CustomerAddress','CustomerCity','CustomerState','BillTo','ShipTo','Payer','Plant','Store','Cash_CustomerVendor_Name','Cash_CustomerVendor_Phone','Cash_CustomerVendor_PAN','Cash_CustomerVendor_Adhar','Cash_CustomerVendor_GSTIN','ProductGroup','ItemGroup','ItemCode','ItemName','ItemDescription','HSNCode','Qty','UOM','Rate','Abt','ExciseAssessValue','Discount','DiscountAmount','Amount','TaxPer','VAT','TaxAmount','AmountAfterTax','OtherAmount','RoundOffAmount','QuotationTotalAmount','QuotationTotalAmountCompCurr','DeliveryDate','Sales Channel','Sales Division','Sales Zone','Sales Region','Sales Territory','Agent','Salesman','DeliveryAddress','Destination','PONo','PODate','PaymentTerms','Remarks','CreatedBy','CreatedDate','UpdatedBy','UpdatedDate']
+   df.columns =['Date','DocNo','DocType','Currency','CustomerCode','Customer','CustomerAddress','CustomerCity','CustomerState','BillTo','ShipTo','Payer','Plant','Store','Cash_CustomerVendor_Name','Cash_CustomerVendor_Phone','Cash_CustomerVendor_PAN','Cash_CustomerVendor_Adhar','Cash_CustomPrerVendor_GSTIN','ProductGroup','ItemGroup','ItemCode','ItemName','ItemDescription','HSNCode','Qty','UOM','Rate','Abt','ExciseAssessValue','Discount','DiscountAmount','Amount','TaxPer','VAT','TaxAmount','AmountAfterTax','OtherAmount','RoundOffAmount','QuotationTotalAmount','QuotationTotalAmountCompCurr','DeliveryDate','Sales Channel','Sales Division','Sales Zone','Sales Region','Sales Territory','Agent','Salesman','DeliveryAddress','Destination','PONo','PODate','PaymentTerms','Remarks','CreatedBy','CreatedDate','UpdatedBy','UpdatedDate']
    df.fillna(0)
    df['Qty'] = df['Qty'].replace(",", "")
    df['month'] = pd.DatetimeIndex(df['Date']).month
    df['Qty'] = df['Qty'].astype('float')
    df['Amount'] = df['Amount'].astype('float')
-   df = df.groupby(['month','ItemCode','ItemName'], as_index=False)['Qty','Amount'].sum()
+   df = df.groupby(['month','ProductGroup','ItemName'], as_index=False)['Qty','Amount'].sum()
    return df
 
 @st.experimental_memo
@@ -99,7 +99,7 @@ def main() -> None:
     if typeofreport=="DemandTrend":
       df = clean_quote(df1)
       with st.expander("View Report"):
-        res = df.pivot(index='ItemCode', columns='month', values=['Qty','Amount'])
+        res = df.pivot(index='ProductGroup', columns='month', values=['Qty','Amount'])
         res['QtyTotal']=res.iloc[:,0:12].sum(axis=1)
         res['AmountTotal'] = res.iloc[:,12:24].sum(axis=1)
         st.write(res)
