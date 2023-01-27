@@ -95,9 +95,9 @@ def main() -> None:
     df1 = pd.read_excel(uploaded_data,header=None)
     with st.expander("Raw Dataframe"):
         st.write(df1)
-    if typeofreport="DemandTrend":
+    if typeofreport=="DemandTrend":
       df = clean_data(df1)
-       with st.expander("View Report"):
+      with st.expander("View Report"):
         res = df.pivot(index='ItemCode', columns='month', values=['Qty','Amount'])
         res['QtyTotal']=res.iloc[:,0:12].sum(axis=1)
         res['AmountTotal'] = res.iloc[:,12:24].sum(axis=1)
