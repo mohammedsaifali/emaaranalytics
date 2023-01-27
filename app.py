@@ -19,7 +19,7 @@ def convert_df(df):
 
 @st.experimental_memo
 def clean_quote(df: pd.DataFrame) -> pd.DataFrame:
-   df = pd.read_excel('quotex.xls',header=None) 
+   #df = pd.read_excel('quotex.xls',header=None) 
    df = df.iloc[4:]
    df.columns =['Date','DocNo','DocType','Currency','CustomerCode','Customer','CustomerAddress','CustomerCity','CustomerState','BillTo','ShipTo','Payer','Plant','Store','Cash_CustomerVendor_Name','Cash_CustomerVendor_Phone','Cash_CustomerVendor_PAN','Cash_CustomerVendor_Adhar','Cash_CustomerVendor_GSTIN','ProductGroup','ItemGroup','ItemCode','ItemName','ItemDescription','HSNCode','Qty','UOM','Rate','Abt','ExciseAssessValue','Discount','DiscountAmount','Amount','TaxPer','VAT','TaxAmount','AmountAfterTax','OtherAmount','RoundOffAmount','QuotationTotalAmount','QuotationTotalAmountCompCurr','DeliveryDate','Sales Channel','Sales Division','Sales Zone','Sales Region','Sales Territory','Agent','Salesman','DeliveryAddress','Destination','PONo','PODate','PaymentTerms','Remarks','CreatedBy','CreatedDate','UpdatedBy','UpdatedDate']
    df.fillna(0)
