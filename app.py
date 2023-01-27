@@ -28,6 +28,7 @@ def clean_quote(df: pd.DataFrame) -> pd.DataFrame:
    df['Qty'] = df['Qty'].astype('float')
    df['Amount'] = df['Amount'].astype('float')
    df = df.groupby(['month','ItemCode','ItemName'], as_index=False)['Qty','Amount'].sum()
+   return df
 
 @st.experimental_memo
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
