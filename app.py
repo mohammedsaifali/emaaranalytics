@@ -76,12 +76,10 @@ def filter_data(
 
 def main() -> None:
     st.header(" Emaar Analytics :bar_chart:")
+    typeofreport = st.selectbox('Pick one', ['DemandTrend', 'ProductTrend'])
 
     with st.expander("How to Use This"):
         st.write(Path("README.md").read_text())
-         
-   typeofreport = st.selectbox('Pick one', ['DemandTrend', 'ProductTrend'])
-
     st.subheader("Upload your CSV ")
     uploaded_data = st.file_uploader(
         "Drag and Drop or Click to Upload", type=".xls", accept_multiple_files=False
