@@ -17,8 +17,17 @@ from pandas.api.types import CategoricalDtype
 def convert_df(df):
    return df.to_csv().encode('utf-8')
 
-
-
+@st.experimental_memo
+def clean_quote(df: pd.DataFrame) -> pd.DataFrame:
+   df = pd.read_excel('quotex.xls',header=None) 
+   df = df.iloc[4:]
+   df.columns =['Date','DocNo','DocType','Currency','CustomerCode','Customer','CustomerAddress','CustomerCity','CustomerState','BillTo','ShipTo','Payer','Plant','Store','Cash_CustomerVendor_Name','Cash_CustomerVendor_Phone','Cash_CustomerVendor_PAN','Cash_CustomerVendor_Adhar','Cash_CustomerVendor_GSTIN','ProductGroup','ItemGroup','ItemCode','ItemName','ItemDescription','HSNCode','Qty','UOM','Rate','Abt','ExciseAssessValue','Discount','DiscountAmount','Amount','TaxPer','VAT','TaxAmount','AmountAfterTax','OtherAmount','RoundOffAmount','QuotationTotalAmount','QuotationTotalAmountCompCurr','DeliveryDate','Sales Channel','Sales Division','Sales Zone','Sales Region','Sales Territory','Agent','Salesman','DeliveryAddress','Destination','PONo','PODate','PaymentTerms','Remarks','CreatedBy','CreatedDate','UpdatedBy','UpdatedDate']
+   df.fillna(0)
+   df['Qty'] = df['Qty'].replace(",", "")
+   df['month'] = pd.DatetimeIndex(df['Date']).month
+   df['Qty'] = df['Qty'].astype('float')
+   df['Amount'] = df['Amount'].astype('float')
+   df = df.groupby(['month','ItemCode','ItemName'], as_index=False)['Qty','Amount'].sum()
 
 @st.experimental_memo
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -70,6 +79,8 @@ def main() -> None:
 
     with st.expander("How to Use This"):
         st.write(Path("README.md").read_text())
+         
+   typeofreport = st.selectbox('Pick one', ['DemandTrend', 'ProductTrend'])
 
     st.subheader("Upload your CSV ")
     uploaded_data = st.file_uploader(
@@ -86,10 +97,10 @@ def main() -> None:
     df1 = pd.read_excel(uploaded_data,header=None)
     with st.expander("Raw Dataframe"):
         st.write(df1)
-
-    df = clean_data(df1)
-    with st.expander("View Report"):
-        res = df.pivot(index='Item', columns='month', values=['Qty','Amount'])
+    if typeofreport="DemandTrend":
+      df = clean_data(df1)
+       with st.expander("View Report"):
+        res = df.pivot(index='ItemCode', columns='month', values=['Qty','Amount'])
         res['QtyTotal']=res.iloc[:,0:12].sum(axis=1)
         res['AmountTotal'] = res.iloc[:,12:24].sum(axis=1)
         st.write(res)
@@ -101,6 +112,23 @@ def main() -> None:
            "text/csv",
            key='download-csv'
         )
+
+      
+    else:
+      df = clean_data(df1)
+      with st.expander("View Report"):
+           res = df.pivot(index='Item', columns='month', values=['Qty','Amount'])
+           res['QtyTotal']=res.iloc[:,0:12].sum(axis=1)
+           res['AmountTotal'] = res.iloc[:,12:24].sum(axis=1)
+           st.write(res)
+           csv = convert_df(res)
+           st.download_button(
+              "Download Report",
+              csv,
+              "file.csv",
+              "text/csv",
+              key='download-csv'
+           )
 
     st.sidebar.subheader("Filter By Item")
 
