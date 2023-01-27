@@ -98,7 +98,7 @@ def main() -> None:
     if typeofreport=="DemandTrend":
       df = clean_quote(df1)
       with st.expander("View Report"):
-        res = df.pivot(index='ItemCode', columns='month', values=['Qty','Amount'])
+        res = df.pivot(index='Item', columns='month', values=['Qty','Amount'])
         res['QtyTotal']=res.iloc[:,0:12].sum(axis=1)
         res['AmountTotal'] = res.iloc[:,12:24].sum(axis=1)
         st.write(res)
