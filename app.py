@@ -27,7 +27,7 @@ def clean_quote(df: pd.DataFrame) -> pd.DataFrame:
    df['month'] = pd.DatetimeIndex(df['Date']).month
    df['Qty'] = df['Qty'].astype('float')
    df['Amount'] = df['Amount'].astype('float')
-   df = df.groupby(['month','ProductGroup'], as_index=False)['Qty','Amount'].sum()
+   df = df.groupby(['month','ItemCode'], as_index=False)['Qty','Amount'].sum()
    return df
 
 @st.experimental_memo
