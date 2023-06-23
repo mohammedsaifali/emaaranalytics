@@ -34,7 +34,7 @@ def clean_quote(df: pd.DataFrame) -> pd.DataFrame:
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 #df = pd.read_excel('dataemi2.xls',header=None)
     df = df.iloc[4:]
-    df.columns =['DocDate', 'DocType', 'DocNo', 'PRDORDNO','Code','Item','Store','Qty','Unit','Rate','Amount']
+    df.columns = ['DocDate', 'DocType', 'DocNo', 'PRDORDNO','Code','Item','Store','Qty','Unit','Rate','Amount','CreatedDate']
     df.dropna(inplace=True)
     #df.round(2)
     df['Qty'] = df['Qty'].str.replace(",", "")
