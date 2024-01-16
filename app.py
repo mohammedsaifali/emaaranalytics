@@ -21,16 +21,19 @@ def clean_quote(file_path: str) -> pd.DataFrame:
     # Load the Excel file, skipping the first two rows and setting the third row as headers
     df = pd.read_excel(file_path, header=2)
 
-    # Rename columns based on their positions to standard names for consistency
+    # Set the column names based on their positions
     df.columns = ['DocDate', 'DocType', 'DocNo', 'PRDORDNO', 'Code', 'Item', 'Store', 
                   'Qty', 'Unit', 'Rate', 'Amount', 'CreatedDate']
 
     # Drop rows with NaN values in essential columns
     df.dropna(subset=['DocDate', 'Item', 'Qty', 'Amount'], inplace=True)
 
-    # Replace commas and convert 'Qty' and 'Amount' to float
-    df['Qty'] = df['Qty'].replace(",", "").astype('float')
-    df['Amount'] = df['Amount'].replace(",", "").astype('float')
+    # Clean and convert 'Qty' and 'Amount' to float
+    df['Qty'] = pd.to_numeric(df['Qty'].astype(str).str.replace(",", ""), errors='coerce')
+    df['Amount'] = pd.to_numeric(df['Amount'].astype(str).str.replace(",", ""), errors='coerce')
+
+    # Drop any rows where 'Qty' or 'Amount' could not be converted to float
+    df.dropna(subset=['Qty', 'Amount'], inplace=True)
 
     # Convert 'DocDate' to datetime and extract the month
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
@@ -39,6 +42,7 @@ def clean_quote(file_path: str) -> pd.DataFrame:
     df = df.groupby(['month', 'Item'], as_index=False)[['Qty', 'Amount']].sum()
 
     return df
+
 
 
 @st.experimental_memo
