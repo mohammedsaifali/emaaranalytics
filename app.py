@@ -19,8 +19,15 @@ def convert_df(df):
 @st.experimental_memo
 def clean_quote(file_path: str) -> pd.DataFrame:
     df = pd.read_excel(file_path, header=2)
-    df['Qty'] = df['Qty'].replace(",", "").astype('float')
-    df['Amount'] = df['Amount'].replace(",", "").astype('float')
+    
+    # Check if 'Qty' and 'Amount' columns exist
+    if 'Qty' in df.columns and 'Amount' in df.columns:
+        df['Qty'] = df['Qty'].replace(",", "").astype('float')
+        df['Amount'] = df['Amount'].replace(",", "").astype('float')
+    else:
+        st.error("Required columns 'Qty' or 'Amount' not found in the file.")
+        return pd.DataFrame()  # Return an empty DataFrame
+
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
     df = df.groupby(['month', 'Item'], as_index=False)['Qty', 'Amount'].sum()
     return df
