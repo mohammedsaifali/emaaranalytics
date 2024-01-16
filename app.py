@@ -18,19 +18,27 @@ def convert_df(df):
 
 @st.experimental_memo
 def clean_quote(file_path: str) -> pd.DataFrame:
+    # Load the Excel file, skipping the first two rows and setting the third row as headers
     df = pd.read_excel(file_path, header=2)
-    
-    # Check if 'Qty' and 'Amount' columns exist
-    if 'Qty' in df.columns and 'Amount' in df.columns:
-        df['Qty'] = df['Qty'].replace(",", "").astype('float')
-        df['Amount'] = df['Amount'].replace(",", "").astype('float')
-    else:
-        st.error("Required columns 'Qty' or 'Amount' not found in the file.")
-        return pd.DataFrame()  # Return an empty DataFrame
 
+    # Rename columns to have consistent names
+    df.rename(columns={'Unnamed: 7': 'Qty', 'Unnamed: 10': 'Amount'}, inplace=True)
+
+    # Drop rows with NaN values in essential columns
+    df.dropna(subset=['DocDate', 'Item', 'Qty', 'Amount'], inplace=True)
+
+    # Replace commas and convert 'Qty' and 'Amount' to float
+    df['Qty'] = df['Qty'].replace(",", "").astype('float')
+    df['Amount'] = df['Amount'].replace(",", "").astype('float')
+
+    # Convert 'DocDate' to datetime and extract the month
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
-    df = df.groupby(['month', 'Item'], as_index=False)['Qty', 'Amount'].sum()
+
+    # Group by 'month' and 'Item', and sum 'Qty' and 'Amount'
+    df = df.groupby(['month', 'Item'], as_index=False)[['Qty', 'Amount']].sum()
+
     return df
+
 
 @st.experimental_memo
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
