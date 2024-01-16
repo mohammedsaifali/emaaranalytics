@@ -21,8 +21,9 @@ def clean_quote(file_path: str) -> pd.DataFrame:
     # Load the Excel file, skipping the first two rows and setting the third row as headers
     df = pd.read_excel(file_path, header=2)
 
-    # Rename columns to have consistent names
-    df.rename(columns={'Unnamed: 7': 'Qty', 'Unnamed: 10': 'Amount'}, inplace=True)
+    # Rename columns based on their positions to standard names for consistency
+    df.columns = ['DocDate', 'DocType', 'DocNo', 'PRDORDNO', 'Code', 'Item', 'Store', 
+                  'Qty', 'Unit', 'Rate', 'Amount', 'CreatedDate']
 
     # Drop rows with NaN values in essential columns
     df.dropna(subset=['DocDate', 'Item', 'Qty', 'Amount'], inplace=True)
