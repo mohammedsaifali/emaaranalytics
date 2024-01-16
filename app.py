@@ -46,16 +46,32 @@ def clean_quote(file_path: str) -> pd.DataFrame:
 
 
 @st.experimental_memo
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.iloc[4:]
-    df.columns = ['DocDate', 'DocType', 'DocNo', 'PRDORDNO','Code','Item','Store','Qty','Unit','Rate','Amount','CreatedDate']
-    df.dropna(inplace=True)
-    df['Qty'] = df['Qty'].str.replace(",", "")
+def clean_data(file_path: str) -> pd.DataFrame:
+    # Load the Excel file, skipping the first two rows and setting the third row as headers
+    df = pd.read_excel(file_path, header=2)
+
+    # Set the column names based on their positions
+    df.columns = ['DocDate', 'DocType', 'DocNo', 'PRDORDNO', 'Code', 'Item', 'Store', 
+                  'Qty', 'Unit', 'Rate', 'Amount', 'CreatedDate']
+
+    # Drop rows with NaN values in essential columns
+    df.dropna(subset=['DocDate', 'Item', 'Qty', 'Amount'], inplace=True)
+
+    # Clean and convert 'Qty' and 'Amount' to float
+    df['Qty'] = pd.to_numeric(df['Qty'].astype(str).str.replace(",", ""), errors='coerce')
+    df['Amount'] = pd.to_numeric(df['Amount'].astype(str).str.replace(",", ""), errors='coerce')
+
+    # Drop any rows where 'Qty' or 'Amount' could not be converted to float
+    df.dropna(subset=['Qty', 'Amount'], inplace=True)
+
+    # Convert 'DocDate' to datetime and extract the month
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
-    df['Qty'] = df['Qty'].astype('float')
-    df['Amount'] = df['Amount'].astype('float')
+
+    # Group by 'month' and 'Item', and sum 'Qty' and 'Amount'
     df = df.groupby(['month', 'Item'], as_index=False)[['Qty', 'Amount']].sum()
+
     return df
+
 
 @st.experimental_memo
 def filter_data(df: pd.DataFrame, account_selections: list[str]) -> pd.DataFrame:
