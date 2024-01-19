@@ -91,4 +91,5 @@ def main() -> None:
         )
 
 if __name__ == "__main__":
-    st.set_page_config("Emaar Analytics")
+    st.set_page_config("Emaar Analytics", "📊", initial_sidebar_state="expanded", layout="wide") 
+    main()
