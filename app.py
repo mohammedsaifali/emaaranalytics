@@ -10,12 +10,19 @@ def prepare_data(file_path, include_rate=True) -> pd.DataFrame:
     df.dropna(subset=['DocDate', 'Item', 'Qty', 'Amount'], inplace=True)
     df['Qty'] = pd.to_numeric(df['Qty'].astype(str).str.replace(",", ""), errors='coerce')
     df['Amount'] = pd.to_numeric(df['Amount'].astype(str).str.replace(",", ""), errors='coerce')
-    df['Rate'] = pd.to_numeric(df['Rate'].astype(str).str.replace(",", ""), errors='coerce') if include_rate else df['Rate']
-    df.dropna(subset=['Qty', 'Amount'], inplace=True)
+    if include_rate:
+        df['Rate'] = pd.to_numeric(df['Rate'].astype(str).str.replace(",", ""), errors='coerce')
+    df.dropna(subset=['Qty', 'Amount'] + (['Rate'] if include_rate else []), inplace=True)
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
-    group_columns = ['month', 'Item', 'Qty', 'Rate', 'Amount'] if include_rate else ['month', 'Item', 'Qty', 'Amount']
-    df = df.groupby(group_columns, as_index=False).sum()
+
+    # Ensure the correct columns are included in the groupby operation
+    group_columns = ['month', 'Item', 'Qty', 'Amount']
+    if include_rate:
+        group_columns.append('Rate')
+    df = df.groupby(['month', 'Item'], as_index=False)[group_columns].sum()
+
     return df
+
 
 def to_excel(df):
     output = BytesIO()
