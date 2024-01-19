@@ -14,10 +14,11 @@ from pandas.api.types import CategoricalDtype
 
 @st.experimental_memo
 def convert_df(df):
+    # Convert dataframe to CSV for download
     return df.to_csv().encode('utf-8')
 
 @st.experimental_memo
-def clean_quote(file_path: str) -> pd.DataFrame:
+def prepare_data(file_path: str, include_rate: bool) -> pd.DataFrame:
     # Load the Excel file, skipping the first two rows and setting the third row as headers
     df = pd.read_excel(file_path, header=2)
 
@@ -28,50 +29,22 @@ def clean_quote(file_path: str) -> pd.DataFrame:
     # Drop rows with NaN values in essential columns
     df.dropna(subset=['DocDate', 'Item', 'Qty', 'Amount'], inplace=True)
 
-    # Clean and convert 'Qty' and 'Amount' to float
+    # Clean and convert 'Qty', 'Rate', and 'Amount' to float
     df['Qty'] = pd.to_numeric(df['Qty'].astype(str).str.replace(",", ""), errors='coerce')
+    df['Rate'] = pd.to_numeric(df['Rate'].astype(str).str.replace(",", ""), errors='coerce') if include_rate else df['Rate']
     df['Amount'] = pd.to_numeric(df['Amount'].astype(str).str.replace(",", ""), errors='coerce')
 
-    # Drop any rows where 'Qty' or 'Amount' could not be converted to float
-    df.dropna(subset=['Qty', 'Amount'], inplace=True)
+    # Drop any rows where 'Qty', 'Rate' (if included), or 'Amount' could not be converted to float
+    df.dropna(subset=['Qty', 'Rate', 'Amount'], inplace=True)
 
     # Convert 'DocDate' to datetime and extract the month
     df['month'] = pd.DatetimeIndex(df['DocDate']).month
 
-    # Group by 'month' and 'Item', and sum 'Qty' and 'Amount'
-    df = df.groupby(['month', 'Item'], as_index=False)[['Qty', 'Amount']].sum()
+    # Group by 'month' and 'Item', and sum 'Qty', 'Rate' (if included), and 'Amount'
+    group_columns = ['month', 'Item', 'Qty', 'Rate', 'Amount'] if include_rate else ['month', 'Item', 'Qty', 'Amount']
+    df = df.groupby(['month', 'Item'], as_index=False)[group_columns].sum()
 
     return df
-
-
-
-@st.experimental_memo
-def clean_data(file_path: str) -> pd.DataFrame:
-    # Load the Excel file, skipping the first two rows and setting the third row as headers
-    df = pd.read_excel(file_path, header=2)
-
-    # Set the column names based on their positions
-    df.columns = ['DocDate', 'DocType', 'DocNo', 'PRDORDNO', 'Code', 'Item', 'Store', 
-                  'Qty', 'Unit', 'Rate', 'Amount', 'CreatedDate']
-
-    # Drop rows with NaN values in essential columns
-    df.dropna(subset=['DocDate', 'Item', 'Qty', 'Amount'], inplace=True)
-
-    # Clean and convert 'Qty' and 'Amount' to float
-    df['Qty'] = pd.to_numeric(df['Qty'].astype(str).str.replace(",", ""), errors='coerce')
-    df['Amount'] = pd.to_numeric(df['Amount'].astype(str).str.replace(",", ""), errors='coerce')
-
-    # Drop any rows where 'Qty' or 'Amount' could not be converted to float
-    df.dropna(subset=['Qty', 'Amount'], inplace=True)
-
-    # Convert 'DocDate' to datetime and extract the month
-    df['month'] = pd.DatetimeIndex(df['DocDate']).month
-
-    # Group by 'month' and 'Item', and sum 'Qty' and 'Amount'
-    df = df.groupby(['month', 'Item'], as_index=False)[['Qty', 'Amount']].sum()
-
-    return df
-
 
 @st.experimental_memo
 def filter_data(df: pd.DataFrame, account_selections: list[str]) -> pd.DataFrame:
@@ -91,15 +64,14 @@ def main() -> None:
 
     with st.expander("How to Use This"):
         st.write(Path("README.md").read_text())
+    
     st.subheader("Upload your Excel File")
     uploaded_data = st.file_uploader("Drag and Drop or Click to Upload", type=".xls", accept_multiple_files=False)
 
     if uploaded_data:
         st.success("Uploaded your file!")
-        if typeofreport == "DemandTrend":
-            df = clean_quote(uploaded_data)
-        else:
-            df = clean_data(uploaded_data)
+        include_rate = True if typeofreport == "ProductTrend" else False
+        df = prepare_data(uploaded_data, include_rate)
         
         with st.expander("View Report"):
             st.write(df)
@@ -109,6 +81,14 @@ def main() -> None:
         account_selections = st.sidebar.multiselect("Select Items to View", options=accounts, default=accounts)
         filter_data(df, account_selections)
 
+        # Download button for the report
+        csv = convert_df(df)
+        st.download_button(
+            label="Download data as CSV",
+            data=csv,
+            file_name='report.csv',
+            mime='text/csv',
+        )
+
 if __name__ == "__main__":
-    st.set_page_config("Emaar Analytics", "📊", initial_sidebar_state="expanded", layout="wide")
-    main()
+    st.set_page_config("Emaar Analytics")
