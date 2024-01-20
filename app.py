@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 from io import BytesIO
+import matplotlib.pyplot as plt
 
 @st.experimental_memo
 def prepare_data(file_path, include_rate=True) -> pd.DataFrame:
