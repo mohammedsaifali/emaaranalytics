@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 from io import BytesIO
-import matplotlib.pyplot as plt
 
 @st.experimental_memo
 def prepare_data(file_path, include_rate=True) -> pd.DataFrame:
@@ -42,36 +41,15 @@ def main():
 
     if uploaded_data:
         df = prepare_data(uploaded_data, include_rate=True)
-
-        # Filter for items
-        unique_items = df['Item'].unique()
-        selected_items = st.multiselect('Select Items', unique_items, default=unique_items)
-
-        # Filter dataframe based on selected items
-        filtered_df = df[df['Item'].isin(selected_items)]
-
-        # Plotting
-        if not filtered_df.empty:
-            fig, ax = plt.subplots()
-            for item in selected_items:
-                item_df = filtered_df[filtered_df['Item'] == item]
-                ax.plot(item_df['month'], item_df['Qty'], label=item)
-            ax.set_xlabel('Month')
-            ax.set_ylabel('Quantity')
-            ax.set_title('Monthly Quantity of Selected Items')
-            ax.legend()
-            st.pyplot(fig)
-
-        st.write(filtered_df)
+        st.write(df)
 
         # Download button
         st.download_button(
             label="Download Excel",
-            data=to_excel(filtered_df),
+            data=to_excel(df),
             file_name="report.xlsx",
             mime="application/vnd.ms-excel"
         )
 
 if __name__ == "__main__":
     main()
-
