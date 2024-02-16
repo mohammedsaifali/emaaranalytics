@@ -45,11 +45,21 @@ def main():
         df = prepare_data(uploaded_data, include_rate=True)
         st.write(df)
 
+        # Slider for month filtering
+        min_month, max_month = int(df['month'].min()), int(df['month'].max())
+        selected_months = st.slider('Select a range of months', min_month, max_month, (min_month, max_month))
+
+        # Filtering data based on selected months
+        filtered_df = df[(df['month'] >= selected_months[0]) & (df['month'] <= selected_months[1])]
+
         # Plotting
         if typeofreport == 'ProductTrend':
+            st.set_option('deprecation.showPyplotGlobalUse', False)  # Optional, to hide warning
+            st.set_page_config(layout="wide")  # Set the layout to wide mode
+
             fig, ax = plt.subplots()
-            for item in df['Item'].unique():
-                item_df = df[df['Item'] == item]
+            for item in filtered_df['Item'].unique():
+                item_df = filtered_df[filtered_df['Item'] == item]
                 ax.plot(item_df['month'], item_df['Qty'], label=item)
             ax.set_xlabel('Month')
             ax.set_ylabel('Quantity')
@@ -60,7 +70,7 @@ def main():
         # Download button
         st.download_button(
             label="Download Excel",
-            data=to_excel(df),
+            data=to_excel(filtered_df),
             file_name="report.xlsx",
             mime="application/vnd.ms-excel"
         )
