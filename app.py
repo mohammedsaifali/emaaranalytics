@@ -45,12 +45,12 @@ def main():
         df = prepare_data(uploaded_data, include_rate=True)
         st.write(df)
 
-        # Slider for month filtering
-        min_month, max_month = int(df['month'].min()), int(df['month'].max())
-        selected_months = st.slider('Select a range of months', min_month, max_month, (min_month, max_month))
+        # Slider for item selection
+        unique_items = df['Item'].unique()
+        selected_items = st.multiselect('Select items', unique_items, default=unique_items)
 
-        # Filtering data based on selected months
-        filtered_df = df[(df['month'] >= selected_months[0]) & (df['month'] <= selected_months[1])]
+        # Filtering data based on selected items
+        filtered_df = df[df['Item'].isin(selected_items)]
 
         # Plotting
         if typeofreport == 'ProductTrend':
@@ -58,7 +58,7 @@ def main():
             st.set_page_config(layout="wide")  # Set the layout to wide mode
 
             fig, ax = plt.subplots()
-            for item in filtered_df['Item'].unique():
+            for item in selected_items:
                 item_df = filtered_df[filtered_df['Item'] == item]
                 ax.plot(item_df['month'], item_df['Qty'], label=item)
             ax.set_xlabel('Month')
