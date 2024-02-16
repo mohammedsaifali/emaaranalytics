@@ -1,6 +1,8 @@
 import pandas as pd
 import streamlit as st
 from io import BytesIO
+import matplotlib.pyplot as plt
+
 
 @st.experimental_memo
 def prepare_data(file_path, include_rate=True) -> pd.DataFrame:
@@ -42,6 +44,18 @@ def main():
     if uploaded_data:
         df = prepare_data(uploaded_data, include_rate=True)
         st.write(df)
+
+        # Plotting
+        if typeofreport == 'ProductTrend':
+            fig, ax = plt.subplots()
+            for item in df['Item'].unique():
+                item_df = df[df['Item'] == item]
+                ax.plot(item_df['month'], item_df['Qty'], label=item)
+            ax.set_xlabel('Month')
+            ax.set_ylabel('Quantity')
+            ax.set_title('Product Trend Over Months')
+            ax.legend()
+            st.pyplot(fig)
 
         # Download button
         st.download_button(
